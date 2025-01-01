@@ -1,27 +1,19 @@
-// kernel/kernel.c - Basic kernel code
+// kernel/kernel.c - Basic kernel code with graphics
+
+#include "graphics.h"
 
 void kernel_main(void) {
-    const char *str = "Welcome to S OS!";
-    char *vidptr = (char*)0xb8000;  // Video memory
-    unsigned int i = 0;
-    unsigned int j = 0;
+    init_graphics();
 
-    // Clear the screen
-    while (j < 80 * 25 * 2) {
-        vidptr[j] = ' ';
-        vidptr[j+1] = 0x07;  // Attribute-byte: light grey on black screen
-        j = j + 2;
+    // Clear screen by drawing a black rectangle over the entire screen
+    draw_rect(0, 0, VGA_WIDTH, VGA_HEIGHT, 0);
+
+    // Draw a white rectangle
+    draw_rect(50, 50, 100, 50, 15);
+
+    // Infinite loop to keep the kernel running
+    while (1) {
+        // Halt the CPU to save power between interrupts
+        asm volatile ("hlt");
     }
-
-    j = 0;
-
-    // Write the string to video memory
-    while (str[j] != '\0') {
-        vidptr[i] = str[j];
-        vidptr[i+1] = 0x07;
-        ++j;
-        i = i + 2;
-    }
-
-    return;
 }
